@@ -1,0 +1,143 @@
+{
+  "*FRAIS": {
+    "_debit": {
+      "_type": "financial fee",
+      "_id": "400340",
+      "_proba": 0.7
+    },
+    "TENUE": {
+      "_debit": {
+        "_proba": 1
+      }
+    }
+  },
+  "INTERETS": {
+    "_id": "200130",
+    "_proba": 1
+  },
+  "COMPLEMENT": {
+    "_id": "200130",
+    "_proba": 1
+  },
+  "REM": {
+    "_id": "200",
+    "_proba": 0.5,
+
+    "CHQ": {
+      "_id": "200",
+      "_proba": 1
+    }
+  },
+  "VIR": {
+    "_type": "transfer",
+    "_id": "100",
+    "_proba": 1,
+    "_credit": {
+      "_id": "200100",
+      "_proba": 0.8
+    },
+
+    "SEPA": {
+      "LIVRET": {
+        "_id": "600170",
+        "_proba": 1
+      }
+    }
+  },
+  "PRLV": {
+    "_type": "direct debit",
+    "_id": "400100",
+    "_proba": 0.6,
+
+    "SEPA": {
+      "MATMUT": {
+        "_id": "400230",
+        "_proba": 0.8
+      }
+    }
+  },
+  "PRIME": {
+    "_type": "Bank",
+    "_id": "200150",
+    "_proba": 0.8
+  },
+  "RELEVÉ": {
+    "_type": "credit card",
+    "_id": "600120",
+    "_proba": 0.6,
+
+    "DIFFÉRÉ": {
+      "_proba": 1
+    }
+  },
+  "CARTE": {
+    "_type": "credit card",
+    "_id": "400100",
+    "_proba": 0.6,
+
+    "OVH": {
+      "_id": "400740",
+      "_proba": 1
+    },
+    "GOOGLE": {
+      "_id": "400740",
+      "_proba": 1
+    },
+    "IKEA": {
+      "_id": "401060",
+      "_proba": 0.9
+    },
+    "AUCHAN": {
+      "_id": "400110",
+      "_proba": 1
+    },
+    "BOULANGERIE": {
+      "_id": "400110",
+      "_proba": 1
+    },
+    "COIFF": {
+      "_id": "400190",
+      "_proba": 0.9
+    },
+    "NOCIBE": {
+      "_id": "400190",
+      "_proba": 1
+    },
+    "MEMPHIS": {
+      "_id": "400810",
+      "_proba": 0.9,
+
+      "COFFEE": {
+        "_proba": 1
+      }
+    },
+    "BURGER": {
+      "_id": "400810",
+      "_proba": 0.8,
+
+      "KING": {
+        "_proba": 1
+      }
+    },
+    "BRASS": {
+      "_id": "400810",
+      "_proba": 0.7,
+
+      "CAMBIER": {
+        "_proba": 1
+      }
+    },
+    "CHAUSSEA": {
+      "_id": "400130",
+      "_proba": 1
+    },
+    "STATIONNEM": {
+      "_id": "400270",
+      "_proba": 0.8
+    },
+    "EFFIA": {
+      "_id": "400270",
+      "_proba": 1
+    }
+  }
+}

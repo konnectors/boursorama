@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: helpers.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: helpers.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const moment = require('moment')
+const rerrors = require('request-promise/errors')
+const { log, errors } = require('cozy-konnector-libs')
+
+const classification = require('../classification.json')
+
+// ====== Constants =======
+
+const defaultMedataOperation = {
+  _id: '0',
+  _proba: 0,
+  _type: 'none'
+}
+
+const AbbrToAccountType = {
+  'account--card': 'CreditCard'
+}
+
+// ====== Public functions =======
+
+/**
+ * Convert string to {@link moment.Moment}
+ * @param {string} date
+ * @returns {moment.Moment}
+ */
+function parseDate(date) {
+  moment.locale('fr')
+  return moment(date, 'DD/MM/YYYY')
+}
+
+/**
+ * Convert an amount to float
+ * @param {string} amount
+ * @returns {Number}
+ */
+function normalizeAmount(amount) {
+  return parseFloat(
+    amount
+      .replaceAll(/\s/, '')
+      .replace(',', '.')
+      .trim()
+  )
+}
+
+/**
+ * Analyzes the CSS classes of the bank account to find its type
+ *
+ * @param {string} label The CSS classes of the bank account
+ * @see {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankaccounts|io.cozy.bank.accounts}
+ * @returns {string} The type of the bank account
+ */
+function getAccountTypeFromCSS(cssClasses) {
+  let cssClass = cssClasses.split(' ')
+
+  if (cssClass.length === 1) return 'Checkings'
+  return AbbrToAccountType[cssClass[1]] || 'Unknown'
+}
+
+/**
+ * Searches in the classification.json file, the metadata corresponding to words passed in parameters.
+ * This function ignores the metadata dedicated to debit operations.
+ *
+ * @param {array} words
+ * @returns {object}
+ */
+function findMetadataForCreditOperation(words) {
+  return _classification(words, defaultMedataOperation, (tree, metadata) =>
+    _readSpecificMetaData(tree, '_credit', metadata)
+  )
+}
+
+/**
+ * Searches in the classification.json file, the metadata corresponding to words passed in parameters.
+ * This function ignores the metadata dedicated to credit operations.
+ *
+ * @param {array} words
+ * @returns {object}
+ */
+function findMetadataForDebitOperation(words) {
+  return _classification(words, defaultMedataOperation, (tree, metadata) =>
+    _readSpecificMetaData(tree, '_debit', metadata)
+  )
+}
+
+/**
+ *
+ * @param err
+ * @returns {Promise.&lt;*>}
+ */
+function handleRequestErrors(err) {
+  if (
+    err instanceof rerrors.RequestError ||
+    err instanceof rerrors.StatusCodeError
+  ) {
+    log('error', err)
+    throw new Error(errors.VENDOR_DOWN)
+  } else {
+    return Promise.reject(err)
+  }
+}
+
+// ====== Private functions =======
+
+function _classification(words, metadata, fnReadMetadata) {
+  let treeActive = classification[words[0].toUpperCase()]
+  if (!treeActive) {
+    return metadata
+  }
+
+  let index = words[0] === 'CARTE' ? 2 : 1
+
+  fnReadMetadata(treeActive, metadata)
+
+  for (let word of words.slice(index)) {
+    let tree = treeActive[word.toUpperCase()]
+
+    if (!tree) {
+      return metadata
+    }
+
+    fnReadMetadata(tree, metadata)
+    treeActive = tree
+  }
+}
+
+function _readDefaultMetaData(treeMetadata, metadata) {
+  Object.keys(metadata).forEach(key => {
+    if (treeMetadata[key]) metadata[key] = treeMetadata[key]
+  })
+}
+
+function _readSpecificMetaData(treeMetadata, typeOperation, metadata) {
+  _readDefaultMetaData(treeMetadata, metadata)
+
+  if (treeMetadata[typeOperation]) {
+    _readDefaultMetaData(treeMetadata[typeOperation], metadata)
+  }
+  return metadata
+}
+
+// ====== Export =======
+
+module.exports = {
+  parseDate,
+  normalizeAmount,
+  handleRequestErrors,
+  getAccountTypeFromCSS,
+  findMetadataForCreditOperation,
+  findMetadataForDebitOperation
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#authenticate">authenticate</a></li><li><a href="global.html#compareImages">compareImages</a></li><li><a href="global.html#downloadCSVWithBankInformation">downloadCSVWithBankInformation</a></li><li><a href="global.html#fetchBalances">fetchBalances</a></li><li><a href="global.html#findMetadataForCreditOperation">findMetadataForCreditOperation</a></li><li><a href="global.html#findMetadataForDebitOperation">findMetadataForDebitOperation</a></li><li><a href="global.html#getAccountTypeFromCSS">getAccountTypeFromCSS</a></li><li><a href="global.html#getBalanceHistory">getBalanceHistory</a></li><li><a href="global.html#handleRequestErrors">handleRequestErrors</a></li><li><a href="global.html#normalizeAmount">normalizeAmount</a></li><li><a href="global.html#parseBankAccounts">parseBankAccounts</a></li><li><a href="global.html#parseDate">parseDate</a></li><li><a href="global.html#parseOperations">parseOperations</a></li><li><a href="global.html#saveBalances">saveBalances</a></li><li><a href="global.html#start">start</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Apr 23 2019 22:28:50 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "source": {
+    "include": ["src/"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": ".+\\.spec\\.js"
+  },
+  "opts": {
+    "encoding": "utf8",
+    "readme": "./README.md",
+    "destination": "./docs/"
+  }
+}
