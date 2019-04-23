@@ -57,6 +57,7 @@
     "svgo": "1.2.1",
     "webpack": "4.29.6",
     "webpack-cli": "3.3.0",
+    "node-loader": "0.6.0",
     "jsdoc": "3.5.5"
   }
 }

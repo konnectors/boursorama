@@ -25,6 +25,18 @@ module.exports = {
     path: path.join(__dirname, 'build'),
     filename: 'index.js'
   },
+  module: {
+    rules: [
+      {
+        test: /\.node$/,
+        use: [
+          {
+            loader: 'node-loader'
+          }
+        ]
+      }
+    ]
+  },
   plugins: [
     new CopyPlugin([
       { from: 'manifest.konnector' },
