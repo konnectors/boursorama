@@ -289,13 +289,13 @@ function parseBankAccounts($) {
  * //     type: 'direct debit',
  * //     cozyCategoryId: '200130',
  * //     cozyCategoryProba: 1,
- * //     date: 2018-12-30T23:00:00.000Z,           (UTC)
- * //     dateOperation: 2018-12-31T23:00:00.000Z,  (UTC)
- * //     dateImport: 2019-04-17T10:07:30.553Z,     (UTC)
+ * //     date: "2018-12-30T23:00:00+01:00",
+ * //     dateOperation: "2018-12-31T23:00:00+01:00",
+ * //     dateImport: "2019-04-17T10:07:30.553Z",     (UTC)
  * //     currency: 'EUR',
  * //     vendorAccountId: 'XXXXXXXX',
  * //     amount: 38.67,
- * //     vendorId: 'XXXXXXXX_2018-12-30_0'         {number}_{date}_{index}
+ * //     vendorId: 'XXXXXXXX_2018-12-30_0'           {number}_{date}_{index}
  * //   }
  *
  * @returns {array} Collection of {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankoperations|io.cozy.bank.operations}.
@@ -334,9 +334,9 @@ function parseOperations(account, operationLines) {
         type: metadata._type || 'none',
         cozyCategoryId: metadata._id || '0',
         cozyCategoryProba: metadata._proba || 0,
-        date: date.toDate(),
-        dateOperation: dateOperation.toDate(),
-        dateImport: new Date(),
+        date: date.format(),
+        dateOperation: dateOperation.format(),
+        dateImport: new Date().toISOString(),
         currency: account.currency,
         vendorAccountId: account.number,
         amount: amount
@@ -345,7 +345,7 @@ function parseOperations(account, operationLines) {
 
   // Forge a vendorId by concatenating account number, day YYYY-MM-DD and index
   // of the operation during the day
-  const groups = groupBy(operations, x => x.date.toISOString().slice(0, 10))
+  const groups = groupBy(operations, x => x.date.slice(0, 10))
   Object.entries(groups).forEach(([date, group]) => {
     group.forEach((operation, i) => {
       operation.vendorId = `${account.vendorId.replaceAll(
