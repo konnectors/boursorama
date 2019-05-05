@@ -72,8 +72,14 @@ async function start(fields) {
     log('info', 'Download CSV', 'bank.operations')
     let csv = await downloadCSVWithBankInformation(lastYear, today, bankAccount)
 
-    log('info', 'Parse operations', 'bank.operations')
-    allOperations = allOperations.concat(lib.parseOperations(bankAccount, csv))
+    if (csv) {
+      log('info', 'Parse operations', 'bank.operations')
+      allOperations = allOperations.concat(
+        lib.parseOperations(bankAccount, csv)
+      )
+    } else {
+      log('info', 'No operations', 'bank.operations')
+    }
   }
 
   const { accounts: savedAccounts } = await reconciliator.save(
@@ -184,7 +190,7 @@ function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
     encoding: 'binary'
   })
     .then(csv => {
-      return csv.split('\n')
+      return csv ? csv.split('\n') : null
     })
     .catch(helpers.handleRequestErrors)
 }
