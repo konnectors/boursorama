@@ -244,8 +244,8 @@ function parseBankAccounts($) {
       },
       type: {
         sel: 'a.account--name',
-        attr: 'class',
-        parse: helpers.getAccountTypeFromCSS
+        attr: 'href',
+        parse: helpers.getAccountTypeFromUrl
       }
     },
     'table.table--accounts tr.table__line--account'
