@@ -55,6 +55,7 @@ function normalizeAmount(amount) {
   return parseFloat(
     amount
       .replaceAll(/\s/, '')
+      .replace('"', '')
       .replace(',', '.')
       .trim()
   )
