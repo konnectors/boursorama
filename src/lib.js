@@ -63,14 +63,18 @@ async function start(fields) {
   log('info', 'Retrieve all informations for each bank accounts found')
 
   const today = moment().format('YYYY-MM-DD')
-  const lastYear = moment()
-    .subtract(1, 'years')
+  const tenYearsAgo = moment()
+    .subtract(10, 'years')
     .format('YYYY-MM-DD')
 
   let allOperations = []
   for (let bankAccount of bankAccounts) {
     log('info', 'Download CSV', 'bank.operations')
-    let csv = await downloadCSVWithBankInformation(lastYear, today, bankAccount)
+    let csv = await downloadCSVWithBankInformation(
+      tenYearsAgo,
+      today,
+      bankAccount
+    )
 
     if (csv) {
       log('info', 'Parse operations', 'bank.operations')
@@ -177,7 +181,6 @@ function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
   })
 
   let formData = [
-    'movementSearch[limit]=2000',
     'movementSearch[realtime]=0',
     'movementSearch[removeExcludeFromBudget]=1',
     'movementSearch[fromDate]=' + fromDate,
