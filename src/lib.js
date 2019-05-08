@@ -221,7 +221,7 @@ function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
  * @returns {array} Collection of
  * {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankaccounts|io.cozy.bank.accounts}
  */
-function parseBankAccounts($) {
+async function parseBankAccounts($) {
   const accounts = scrape(
     $,
     {
@@ -255,17 +255,33 @@ function parseBankAccounts($) {
         sel: 'a.account--name',
         attr: 'href',
         parse: helpers.getAccountTypeFromUrl
+      },
+      url: {
+        sel: 'a.account--name',
+        attr: 'href',
+        parse: href => baseUrl + href
       }
     },
     'table.table--accounts tr.table__line--account'
   )
+
+  for (let account of accounts) {
+    const $ = await request({ uri: account.url })
+    const number = scrape($('h3.account-number'), {
+      reference: {
+        sel: 'strong'
+      }
+    })
+    account.number = number.reference
+    account.vendorId = number.reference
+  }
 
   accounts.forEach(account => {
     account.institutionLabel = 'Boursorama Banque'
     account.currency = 'EUR'
   })
 
-  return accounts
+  return accounts.map(x => omit(x, ['url']))
 }
 
 /**
@@ -318,7 +334,6 @@ function parseOperations(account, operationLines) {
     .map(line => {
       let cells = line.split(';')
       let label = cells[2].replaceAll(/^"|"$/, '')
-      let numberAccount = cells[7]
 
       const words = label.split(' ')
       let metadata = null
@@ -334,9 +349,6 @@ function parseOperations(account, operationLines) {
       } else {
         log('error', cells, 'Could not find an amount in this operation')
       }
-
-      account.number = numberAccount
-      account.vendorId = numberAccount
 
       return {
         label: label,
