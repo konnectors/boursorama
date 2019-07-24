@@ -266,6 +266,14 @@ async function parseBankAccounts($) {
   )
 
   for (let account of accounts) {
+    account.institutionLabel = 'Boursorama Banque'
+    account.currency = 'EUR'
+
+    if (account.type == helpers.AbbrToAccountType['carte']) {
+      // Ignore this step for the card account
+      continue
+    }
+
     const $ = await request({ uri: account.url })
     const number = scrape($('h3.account-number'), {
       reference: {
@@ -275,11 +283,6 @@ async function parseBankAccounts($) {
     account.number = number.reference
     account.vendorId = number.reference
   }
-
-  accounts.forEach(account => {
-    account.institutionLabel = 'Boursorama Banque'
-    account.currency = 'EUR'
-  })
 
   return accounts.map(x => omit(x, ['url']))
 }
@@ -326,6 +329,8 @@ async function parseBankAccounts($) {
  * @returns {array} Collection of {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankoperations|io.cozy.bank.operations}.
  */
 function parseOperations(account, operationLines) {
+  let isCreditCard = account.type == helpers.AbbrToAccountType['carte']
+
   const operations = operationLines
     .slice(1)
     .filter(line => {
@@ -359,10 +364,15 @@ function parseOperations(account, operationLines) {
         dateOperation: dateOperation.format(),
         dateImport: new Date().toISOString(),
         currency: account.currency,
-        vendorAccountId: account.number,
+        vendorAccountId: isCreditCard ? cells[7] : account.number, // cells[7] = bank account number
         amount: amount
       }
     })
+
+  if (isCreditCard) {
+    account.number = operations[0].vendorAccountId
+    account.vendorId = operations[0].vendorAccountId
+  }
 
   // Forge a vendorId by concatenating account number, day YYYY-MM-DD and index
   // of the operation during the day

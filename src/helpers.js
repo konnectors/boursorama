@@ -162,6 +162,7 @@ function _readSpecificMetaData(treeMetadata, typeOperation, metadata) {
 module.exports = {
   parseDate,
   normalizeAmount,
+  AbbrToAccountType,
   handleRequestErrors,
   getAccountTypeFromUrl,
   findMetadataForCreditOperation,
