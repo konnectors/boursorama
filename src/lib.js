@@ -63,17 +63,27 @@ async function start(fields) {
   log('info', 'Retrieve all informations for each bank accounts found')
 
   const today = moment().format('YYYY-MM-DD')
-  const lastYear = moment()
-    .subtract(1, 'years')
+  const tenYearsAgo = moment()
+    .subtract(10, 'years')
     .format('YYYY-MM-DD')
 
   let allOperations = []
   for (let bankAccount of bankAccounts) {
     log('info', 'Download CSV', 'bank.operations')
-    let csv = await downloadCSVWithBankInformation(lastYear, today, bankAccount)
+    let csv = await downloadCSVWithBankInformation(
+      tenYearsAgo,
+      today,
+      bankAccount
+    )
 
-    log('info', 'Parse operations', 'bank.operations')
-    allOperations = allOperations.concat(lib.parseOperations(bankAccount, csv))
+    if (csv) {
+      log('info', 'Parse operations', 'bank.operations')
+      allOperations = allOperations.concat(
+        lib.parseOperations(bankAccount, csv)
+      )
+    } else {
+      log('info', 'No operations', 'bank.operations')
+    }
   }
 
   const { accounts: savedAccounts } = await reconciliator.save(
@@ -171,7 +181,6 @@ function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
   })
 
   let formData = [
-    'movementSearch[limit]=2000',
     'movementSearch[realtime]=0',
     'movementSearch[removeExcludeFromBudget]=1',
     'movementSearch[fromDate]=' + fromDate,
@@ -184,7 +193,7 @@ function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
     encoding: 'binary'
   })
     .then(csv => {
-      return csv.split('\n')
+      return csv ? csv.split('\n') : null
     })
     .catch(helpers.handleRequestErrors)
 }
@@ -212,7 +221,7 @@ function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
  * @returns {array} Collection of
  * {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankaccounts|io.cozy.bank.accounts}
  */
-function parseBankAccounts($) {
+async function parseBankAccounts($) {
   const accounts = scrape(
     $,
     {
@@ -244,19 +253,38 @@ function parseBankAccounts($) {
       },
       type: {
         sel: 'a.account--name',
-        attr: 'class',
-        parse: helpers.getAccountTypeFromCSS
+        attr: 'href',
+        parse: helpers.getAccountTypeFromUrl
+      },
+      url: {
+        sel: 'a.account--name',
+        attr: 'href',
+        parse: href => baseUrl + href
       }
     },
     'table.table--accounts tr.table__line--account'
   )
 
-  accounts.forEach(account => {
+  for (let account of accounts) {
     account.institutionLabel = 'Boursorama Banque'
     account.currency = 'EUR'
-  })
 
-  return accounts
+    if (account.type == helpers.AbbrToAccountType['carte']) {
+      // Ignore this step for the card account
+      continue
+    }
+
+    const $ = await request({ uri: account.url })
+    const number = scrape($('h3.account-number'), {
+      reference: {
+        sel: 'strong'
+      }
+    })
+    account.number = number.reference
+    account.vendorId = number.reference
+  }
+
+  return accounts.map(x => omit(x, ['url']))
 }
 
 /**
@@ -301,6 +329,8 @@ function parseBankAccounts($) {
  * @returns {array} Collection of {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankoperations|io.cozy.bank.operations}.
  */
 function parseOperations(account, operationLines) {
+  let isCreditCard = account.type == helpers.AbbrToAccountType['carte']
+
   const operations = operationLines
     .slice(1)
     .filter(line => {
@@ -309,7 +339,6 @@ function parseOperations(account, operationLines) {
     .map(line => {
       let cells = line.split(';')
       let label = cells[2].replaceAll(/^"|"$/, '')
-      let numberAccount = cells[7]
 
       const words = label.split(' ')
       let metadata = null
@@ -326,9 +355,6 @@ function parseOperations(account, operationLines) {
         log('error', cells, 'Could not find an amount in this operation')
       }
 
-      account.number = numberAccount
-      account.vendorId = numberAccount
-
       return {
         label: label,
         type: metadata._type || 'none',
@@ -338,10 +364,15 @@ function parseOperations(account, operationLines) {
         dateOperation: dateOperation.format(),
         dateImport: new Date().toISOString(),
         currency: account.currency,
-        vendorAccountId: account.number,
+        vendorAccountId: isCreditCard ? cells[7] : account.number, // cells[7] = bank account number
         amount: amount
       }
     })
+
+  if (isCreditCard) {
+    account.number = operations[0].vendorAccountId
+    account.vendorId = operations[0].vendorAccountId
+  }
 
   // Forge a vendorId by concatenating account number, day YYYY-MM-DD and index
   // of the operation during the day

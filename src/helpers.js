@@ -12,8 +12,26 @@ const defaultMedataOperation = {
   _type: 'none'
 }
 
+const AccountType = {
+  CHECKINGS: 'Checkings',
+  SAVINGS: 'Savings',
+  CARD: 'CreditCard',
+  MARKET: 'Market',
+  LIFE_INSURANCE: 'LifeInsurance'
+}
+
 const AbbrToAccountType = {
-  'account--card': 'CreditCard'
+  cav: AccountType.CHECKINGS,
+  livret: AccountType.SAVINGS,
+  pel: AccountType.SAVINGS,
+  cel: AccountType.SAVINGS,
+  ldd: AccountType.SAVINGS,
+  csljeune: AccountType.SAVINGS,
+  ord: AccountType.MARKET,
+  av: AccountType.LIFE_INSURANCE,
+  'assurance-vie': AccountType.LIFE_INSURANCE,
+  pea: AccountType.PEA,
+  carte: AccountType.CARD
 }
 
 // ====== Public functions =======
@@ -37,23 +55,24 @@ function normalizeAmount(amount) {
   return parseFloat(
     amount
       .replaceAll(/\s/, '')
+      .replace('"', '')
       .replace(',', '.')
       .trim()
   )
 }
 
 /**
- * Analyzes the CSS classes of the bank account to find its type
+ * Analyzes the URL of the bank account to find its type
  *
- * @param {string} label The CSS classes of the bank account
+ * @param {string} url The URL of the bank account
  * @see {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankaccounts|io.cozy.bank.accounts}
  * @returns {string} The type of the bank account
  */
-function getAccountTypeFromCSS(cssClasses) {
-  let cssClass = cssClasses.split(' ')
+function getAccountTypeFromUrl(url) {
+  let urlType = url.match(/\/compte\/([^/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
+  let type = urlType[2] || urlType[1]
 
-  if (cssClass.length === 1) return 'Checkings'
-  return AbbrToAccountType[cssClass[1]] || 'Unknown'
+  return AbbrToAccountType[type] || 'Unknown'
 }
 
 /**
@@ -143,8 +162,9 @@ function _readSpecificMetaData(treeMetadata, typeOperation, metadata) {
 module.exports = {
   parseDate,
   normalizeAmount,
+  AbbrToAccountType,
   handleRequestErrors,
-  getAccountTypeFromCSS,
+  getAccountTypeFromUrl,
   findMetadataForCreditOperation,
   findMetadataForDebitOperation
 }
