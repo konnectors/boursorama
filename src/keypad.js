@@ -1,75 +1,159 @@
 /**
- * @see https://github.com/v-garcia/boursorama-auto-login/blob/master/bourso_autologin.user.js
+ * @see https://git.weboob.org/weboob/weboob/blob/master/weboob/tools/captcha/virtkeyboard.py
  */
-const compareImages = require('resemblejs/compareImages')
 
-const DIGIT_B64 = {
-  0: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAABVklEQVRYhe2XMUvEMBiGv1qRDnKILnJDsSAizg6O4nSDiIubv+J+QReHG/wJjk76B27R+SYH6VQHqcPhcCqWlmuTvOdgArlDEGwhg9+zJH0peR9CaCgRwzDMnxBC7AMYAngH8ALgqizLrmuvOaSUpwDEbAEA46qqtl37ERFRURSbAAot9qqU6gMYGHEAI9eOREQE4MLsoJTy2MovrfzIpaMRGumdy5MkWTa5EOLAOgIDl45ERARgomUe7TzP83VL9KZpz1LTBYioo8dPO8yyzH5ea1rShqgR6thhGIa23EfTkjZEn/S4labpigmDINix3nluWtKG6B0Rked5q1EU9Uzo+/6ZmQMYttDTjLIsuwCqH76jSmcPcRy71vxGKXUOYPFimgGY1HW959pvDinlIYB7fdePAVxPp9PQtRfDMAzDMAzjhNuN3Tb+Mph/zlvvhM8Rw/zCF91+E3aH3G3KAAAAAElFTkSuQmCC',
-  1: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAABjUlEQVRYhWNgGAVDBKR+3MQ00G5AAZZ7rxB0UKf1aqxq+reUUdcze/aZE2XgcYO1gysUyQEvJt4fPJ74/fu30b9//z7+/////9/ff7ZT02y8vqxZcZXoUPj165ceMzPzbkZGRj4GBgYGRmamf5Q6jmrgacVkJgYGBoZfv35p/fv37/V/JPDv37+tNHeA+mw3okPy58+fKv/+/XsOddxLujqUFPDnzx+Pf//+/f7379/bX79+6cAc+vfPX6qmUaqAv3//Rvz+/duIgYGBYdCGKDrA5dDD/t9pWzydMtPBacGS8GqmqfZaKPJDPkQpBYOntiAAKHbogpvEF2VUAUsenqWKhdiiflLEnsEXc0MmMw1rMMnx9OBLGkMG1ASXDp3Qe3Qwf+g4lu4gZq70yAudbksnrJ5+ff8GpvgqxfqRF0KjAAZ6oieORv+QAIuXTRtBMfU1h21AfNv6im8EhfKgBjf45AdNVCw6sI48txw+haXOxQKO+QzBZtzj4C0D7+jDPtoD74iBAsyT+LF6HgB1I+QwVBDz4wAAAABJRU5ErkJggg==',
-  2: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAADT0lEQVRYhe2YX0gUQRzHf3cdEhkiERU9lPRgvvRQSURBRVRPJQQVVBB1FFQPEhFhEUF/HupBQghCIsTMREWoh+gpPQmR8hL6IyIibR2ZFXftykm7zf6+00OzNZx33Hln3Zl9Ydmbmd/OfH6/+c3M3hL91wzW/U/b/ZnanqjcmLHtf6VT3bLuWR5N27bLANQBGAQwoa4+Zq4eGBgI5JuPiIiYOQjAkSkEoNswjKK/BtRwrCRp3gCoV0DfADQw80lmPgvgrQfLzKeyGfPVqo/Tk6tnr9T4w+FwAEC9bdsr9DbHccq1qD7S2669v1M4i2V8fHyBBvow1/7SevZ5npHSpqz/U8q24uLioPdbStnb2VlAUfQkhFgP4JuKphWPxxflm2mShBAbAFjaQtqXb6ZJcl13J4AJDbI6md2FoWf5SwNmPg6A1XQLZg4SEVUtX50x1JwjfSltfdMBCaDW5/Od9spSyntSyida2QwEAg+y7X9tMP2iz0jaVKc6nYYy7evo7nN/Li1SHZ/ZgBac3myOpI3cnKWi8PbeglbN8JlZGDGn5fjM8Xrl3sGZA9taMTevsBkP7rt8lwB8UPtiX2J7kr3TAdDjOE65ZxONRucDuA5gRLVHANSOjY3Nmy6HyHXdHTqI4zgViaAALACN6upVdV1ERKZplgJ4rereAegAMKTKT8PhcO5/AnuiW/wAmlWnLep+PQnorxMoFouVqLrXREQA6lS53TCMophd7w+FQn4At5i5JhKJzM0ZVE3ZBIAv8Xh8IQAB4ENbW9uv1NEjykI0AegD4DDzHgUakVLKbF6iD/r7M0tRZg4qkHo16GMppXRdd5sOmiRPX9q2XaaeEQC+ThVySgLQrcC2KvBDCqRZB9WnXgixSdV1qD6SRvTzpdrp2U1s2y5j1031VjQRjUbn66APYjf9RESWZZWqumEFekPPUSIilaO3mfn86Oho+hyNVS1J6RUzX/SmUVvRjQBGpJSSmQ9roBaAxu+uaALwQtU9IiIyTbMkYdW3a6u+OxQK5RZZD0gIsSnBgQPeID/LSIy2ANCbyz4aMyp/w3eZPTPneMxG2/aXT3Jwa3vrv+307FDROjeraRzZtdhPRHTVejul59c8L8BvU/+0fgCaANAze4x/1wAAAABJRU5ErkJggg==',
-  3: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAADNElEQVRYhe2XXUgUURTHz1w/2jQk+lARfSgC6YM+KPogKKgeInoJeoqIEinppaIeVsMwjbSoCILKpyj6oITKvgiCkF7EwHqwkCxzaXOYxLZZjV123PO/vczKNs2mM7vuWviDebn3zDn/c+65984QpQn/ri8iXbHSyvF6JT2Jvet/80eg4LxWx8GfH336f66EK+5V/xh3NZqP3pr4yl29fPjfWJ5IJLIAwBUAHwGEAXwH8JaZvYFAoCDT+oiIiJkrAYzIBADoHR4enpVsnKSXTFGUZYqiZEspA1LKiwAOSClPSSk1c35+fn7+kWTjEBHR3PeXXQv2+/0eAM3WqhmGsTSuqi3Jq0wBXF0lzqoVvyUbDodL44Q2OPG38HwKNufbsk0JnTDzbmbey8xeAN2myI/BYHBm0oETcXNP7biyUpt+jtoBCFo20h1d1ydOpFusQk2xrT6fL9fOftfnQ86X+La+evQl3/RXrnqkra1N1NXVUSAQKGDmqphYZvY69bWC7qf2EgmFQiXRaHSn3XhGdv2FE1v+yFDX9ZkAukwxnQAamHk/M9cA6I0JjRqGo12fclRV9QBoTXQrmQl06bqe2Wu0fke/ICKKRqPbAbQA8AOIAPgGoJ2Zq1RV9WRUpBtK6v/T35Ep3KI1HRxtiQcvN6S2PXoqnqTEYV/g0lTfTm4sh/gIgF4AjZqm5dnZxNl+GO/838hONHGMasQ5Og0ios2Lo8IMNERED4nIQ0RrFUXxFhYWbtE0bWNxcXHIYhNDtST81/mksWbv8/lyATw2v45q7GzG8uEExYlQKWWPEKI8NmYYxpKcnJwuKeVrIcQa02a0YmAIkSW+CiGq43wMMeNRVpaA6UaNzcdY93WfaC+9BnKDXTU0Tcszx/vihDju0YeL5tgeUc9unXR+dNkJNQxjuTnekchmLB9jcW9JuzOx1iCapuUBeJGKHu1eWe68ci3qJ9uXzCBBANcB3GXmfnOsc2BgIM/GJvY0jiU0pVj6igH0ATgzODg4w84mUY86Fbq/rHHir9gb04r+3Xv8Qc/sySm+tmjrxArb1vHYVYDK9aHJUbHc1neTQ8gUcZStcv538AsnZFG5xu+RvgAAAABJRU5ErkJggg==',
-  4: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAACtklEQVRYhe2XT2jTUBzHfw2jdHOWbl6GdruoQ1CY4MHTGMyJf1BBEVQQnR5ELyrbQT2Jkx2GjiHDiwxGh6ciwpCKY4r2IANBlEGFuYNINZZSpa2uadK+7/OSlKyma7NmJtV+TuWX1/c+7/uSlxc6cfSbQCpjPZ2F33WcjLgjWXsrNXGno/ak61RCPp8/wnUACOmvtzx4a//Si6LoAfBpJVHbuLHFVUgIwLAq972c6KGhR/YkK8tyJwCZc84ZY/2rTVTwb1jbCQCYVcXCRERmRHP3L1Yvd2Cip2wnjLHjqpQsy/I2M6LBPaesT/B039M/Ok0kEs0AvqpSt7W6XtT72fybaX7wsbUTADCqCi1Go1GPkailA5pl07QiEBEByPEyWCo7/MEvEBHtfRYxFXkpOcawKtHeSy2G47vMSBnBGOs3qguCMElExDmfVzLSoKd53XOzfZ85KwlTgUYQEdFd3+ia7FuOuUfLoW781ou2L8xZkuyuSb/9h46aZePhQFXpjY3fqqf//xBbLzpjubd2XbNfJBKJNDDGBgC8AyABSAF4uSRn92tt1E1+ofi/+joDM2xjCfF4vAnAa+1TA8ATACEAknaq1wtNt19elqxetNRkLAHAiDrATDKZ9Gp1RVF2AriXyWTaVpKoVrTBRNuTRETZbPacz+dLa0W32/2eiK4QESm7u7QU2wAEDGTX/v4FkAOQKhpYf5RbKK4ZnEtXnaiZGYoul8srSVJHQZ6xh5zzqeKGnPOPriLAuRmv8jSKFwzldd/sL1KplE+rp9Pp1krS+msPUywWawIQ1p76fD4fAjAD4KdaCzhClKiwj17V7aNLAOYYY+eDwaCgl5h9NWLP9lRMvOmHJU/wsYNDlfXT2vfF/ldeCd70bnes2zJ+dV93nujA5kUh1L3PeWL/HOGb47WV8m80H/l8j7Ja5wAAAABJRU5ErkJggg==',
-  5: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAACGklEQVRYhe2YsYsTQRSH34Rs2JAgxyFicY1B5QoR7K8QEVsbQbC2UOwt7Kyu9C8QzsLiIioigiJKDtsUckeQI1h4W2g40SwJu5nMzO/ZbGRZAnc6k9sr5oOFnRn2vW9n9g27S+TxeDz/BB8AgDcu8lRcBDkKqq4CMfM2Mz+a07/nKocVLpZ4d1stfmXzop1Op6KUWjPG3NJaX4miKFy4wGHJie4A+FIopO9a66tlOxLRoao+lVKet81j/Www8wYz7zHzhlLq0mAwaEgpzzDzCyIiIUQYBME92zwLYzQaLedm9Z1tPOsZlVKeNcbcLvbX6/ULuebQNo/VPjocDk8EQfBaCLEK4C4zvyKiH0KIc0T0Vx7AM1tRK9I0XQGwc0AxPS5Vcka/368ZY+4A+ABgH4AC8BvAe2PMjbL9PB6P57iSbea7xXMiImPMg6zvU6/XqxbHj4Wo1voyAAPg23g8PjnvRv4Hp58ASZKcrlQqm0Q00VpfbzabP13FdvZxR0TVMAw3hRCnANys1WqfHcZ2JyqEaBFRi5l/JUny0VXcGbZLj3yDmd8KIZYbjcbTdrtd3j+DOI6XiIgmk0krK5CtTJABfCUiAvA8az+cXXekVT+dTi8CiAG8BBAxMxtj7hdF4jheAhABMFrra7nxGMCT7FhfmKiUcjV75xxlIuvdbrdaFCUiUkqtZVvUfpqmK3NepsvZUz0ej8c9fwA20S75FOG7twAAAABJRU5ErkJggg==',
-  6: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAADCElEQVRYhe2XMWgUQRSGX9RAMEEiiIpahRAUJIWgjaAgkkJFrERBtLARBEmhEi30QCwkpLQQbFRQFEQkWoRYxCI2RiwkSBCRcIQkJhd3ibd7uzfvW5tZXNccp7mLF/X+ZmfeDPO+eTPzZlakrrrqqr1abz5bUWuGsvoU9fwAGQRBO3AHmACKwCRwLwiCjlox/iRjzB4gHy0g4EMmk6k1oojruq3AdALsgaqeAW4CvqqeqDWjiIioak8CsjfZ9nk2174soikiAgxbSN9xnNZCodCmqkeNMfuz2WzTH4Ho+3qt7KkGvljQd8A1QBMRnjbGdP0J1rKKwQC/xGHygyDYWqmfauTBr/bbBFxyXXet53kboii6KyLS0NDQ1NjYeLYKfioT8NZGbixpdxynNRHVgUr9VCOiL+y3IwzDztjY3NycTPROFfxUJnsjFW3kJlX1oqr2ABNxRFX12JIBzF3N/HK0VbV7oYNk4R8vm1wqImKMOQy8BFwgAN6pavfQ0NDyf7jUVQ2tOr23vtQL6uAtrUfmn1P7yZ2/tqqJpP0kaQfep+93W1djzL70GHG/qamp1ap6BRgFfCAPvFHV7pGRkVWLms22KxdWJJ9quVyuRUQkDMPOhP0HUGubmJ+fX5cGzeVyLcAbW58B+oEBwI0fLqOjo4uDtQPk7X19QkQEuG5U/VKg1t6fBgV6bfn53Nzcmrg9n8+vB15bH+cqAR2zr/d+C/oReFhi6ceBsaTTxBjjURRFnudtSvspFou7bL/hikBV9TIQGGP2RVEUGWOOlAAdC8Nwh73rg3ibWNAi8GUhP7Ozsy2236eKQAuFQpstfwTcbDbbVApURERVz9v6+3REfd/fkvZTtYiKiMT7CLiXbkvXM5mMAIPJQwf02fKg4zhLs0dFvkfJGHOgHKiIiOd5G4GZ1KmPf1tmgP6iMb9/6vsedf2UXJPOfd/fAuTiwcqBiogYYw6l8ygQ59HA5tLF5dHdt3v+zjt+e0dnSfDNx2/8nZMqpfVPT/1bE6rrv9X9VytL7uVvMCU+XKU7Kj0AAAAASUVORK5CYII=',
-  7: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAADX0lEQVRYhe2YT2gcVRzHX4ZQQkijpyAi4qF6ELFUStuTeMihgodQrUi0oBcPxUMoHkQk7kFRCKWUIiKiWFqpDVqMIhIUmyIa1BStsv5hEVOm2iGSdGt3ksy89/uMh7ynr5sxm7i77kr3Cwv7fvOb7+/3vu/3fvNmlPo/4Y+dLwatzqGDRmPvyd86q9pQjBx/u7mKAgcFydYCkNQbpyGzCLqupiHLql2oN0Z3vQQiciIIgu+q7ZlSW7u6ukbs8JN64zQNwJtu6Y0xu1udTy7iOB4AElufpUKh0OqU8gGMIisbTERGat/RAhSLxW7golUzLpfL/e7ax6M72qepi8iw15ZebnU+/whg2iWapuntrc4nF1rr7Z6ap529Z9vnuUu+5dnrW1MKwDGvJe1pSRK1UKlU/JYUTk1N/aXWydd2ttUmesapKSJP/ydBHy593z4KtBtOj1+oLU7f5jNNUfDD5x69Rlfm1Jc9q2a+77pDTVHjvfipa1TltsPgD9tWLUXOO8/vwKtzc3O9SikVRVGviIwCRWAJiIGzIjIyMzPTXYPnFcczPz/fBxwGQiABfgbG/BPXmrCkl4Gj9leytoOW/KwX+H1gErhsbZPFYrG7Bs8hpf5+CwA+AyZE5Ff7wNi/kUR/cuM4jgesrQiM2f8fLCws9Ps+wFf+YXktHpvoFSCenZ3dpNTKWVZEHln3G4EfoFAoKGPMkDfz81mWZYuLizc6/6mt3wR3nzKB1nqH9ZvO40m03uNfB87Z8S/AEWPMfX7prCvRnPrKjDFDgAYu5d0XRVGvC+zzCPg8YowZUkqpNE3vdMk6PyDUWt+Vm9i97w5ftaFyamtMa73LqnA+y7JsaWnpJucvIg8Ck8aYQad8Ds9Fe/wbrI6fpukdZtkccKUDnFm3on5t+QBesNc/KpfL/ePj4wEwYW3a1uiBah4RedyOX/Im+IQTQKmVo6L1WfWdYMOJRlHUC3xavevdZx3gUhiGPdU8pVJpk21DOkmSLZVKZcAY0aws9zRwwusKz9edqAsqIk8C57w++jXwBTCfJMlteTwist/a3lFKKa31LmDCTtj10VHX3pqGMAx7lpeXb/63979+yw2dc0Aubv32rXUr89hDwx0VG4K9+7Z3lNwQ3rinL7j/gR8bptqf8001mOS3N2cAAAAASUVORK5CYII=',
-  8: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAADT0lEQVRYhe2YTUhUURTHj0+RKCkXYl8uXASKWrskoqJcWEGFpC3MghatwggsBIlgaBHGYELQSjLSrHyLhMTMRYUkRlirEIuQkMEU5OGoM87Hu+d/29xnz9FRZ3zjDOJ/M4/7zjv3d8497577hijJKq8q0ZLNkHqqqCrYyorjetlbubmyWvi2UntwendyggqHw4cAtAMYAxAC4AcwDMDt8/lyoz2Xfv1d4oBrSr8tci6EOAMgJKMIwHggEMiLZY6f7S3OBwBgxAbVzcw3mLkOwA/b+JPV/LgOlGpERIWuBO2rAPwKZsQ+7vf799gDiMf37KDfOWgAPQrGL4Qod7lc5PF4tjFzvQXKzHWOTRiv5ufn9wH4asveBIA5dS0BtAwPD2ckm5OIiMLhcAkLMbbMi9Tn8/ly4vF5qafb2Vo1TfOorU5nALQA6ARgqrHReGEdlbXsAKbt25AQotyWWbc1PrHrrkZEpF/uWsiY/NOc+AYAIKBgfuu6vjBhMBjMt4H2JhxkNUXsl/3MXMvM9QBGY9lHHZXeOLBkiYQQZVZWo3SmsSnDiKkzJUzBYDAfQLPq73MADADfmfmO1+vNTjYfle64l5CX4FHGwc11ZNwwNb/aqxERZVJv6mTw/uvW1IFxQn9b85YE1FA8m3pB3vIUJQZqMPh4iePjnz9sfAaibOK/7PcBjC/3nDVudSnTNI/YbZi5yupoq3GsGrmUsk1K2aauZ9X1mzXEuCBI8YKIKD09vXqRb5JXld9nsfhbUZGZjBhfMaOqc0kAE/s9RRlERF6vd6f1xWoYRlZKgBIRAeiXUkohxEkiIma+pmw61jL/uoq+cDZ7zc9LKZ8TEWmaVkNElJaWVk1EBMC5Za+9malFy6j6s2GaiMjlDmlERJOTk9sj7Q3DyFK2RiAQyAPAAMbtZ1hHtALokH1JiYiY+Yqy74qw7bAO0ur3oSNwnUMz/z8XooAKIS6qeyEA3QD6VLY4cjuyf55IKWUoFCpcN+TH0veLliQaqAI4B+ALgGl1Fv1kmuaxSDtd1zUA48rXUNxwT3OG4qqXLv2WI3VWM3Uq9Xr6ljZaA7cbFsrgRHFF9JLIbWqMuV7OFgwmvsYami7ENcn5svXBVbkPb64X6B+l6WsPNIgRmwAAAABJRU5ErkJggg==',
-  9: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAqCAYAAADFw8lbAAAACXBIWXMAAAsTAAALEwEAmpwYAAADiUlEQVRYhe2XT2hcVRTGD0MMXUiRIiEW60KqdFHERZEgLkREJDv/IkHFhUKQ4kpEapBKyEqKFFfiQlyUkAkiRURUShOCuykSatCQhROGWkOSSTp5817ee/f8noueO16GSRNMcAKdDwbmnnvuud+957x7zhHZBe/MnyntpvO/4I2/XjkcRHrooQeRKIruBy4Cy0AKrACTaZqe6ja3FuI4HgSWC4Mq/m8BNPM8H+o2RxERAb4KiM2p6lngApCbbLFSqfR1m6cAq0ZoeWlpqd/LVfU9fwDn3HA3OYqISHBzv4TyOI6PBzd9oVv8WgB+NzKqqqNra2v3JknyEDAVEL3cbZ6iqmeLDgCS4P/P3eYpIiLAhA8BI3ZLVd8Mxt/ud48DKUhKpdJHSZKcUNWXVPWFRqNxoiiKvwOV3w5in30jiqKBer1+1I9nZmZKwKy/0TzPn+gmvxaAS5aVxlX1XWAucPuP/8XmxZGfDrb83N7efhj+zUZtH9RiHMfHD3TD/cA5NwxcAbYs1y8CE2E4HBgeuefLXqXfQw89HEacP3++VQQnSfKgl1vG+d6PnXPD9pjPAuPtRUez2RwANgC193UDaIY28zx/ytZdV9UPO2aLoig2Nzfv60gWmCyKolDVV0VE0jQ9aQa3fDsBTJjOuYWFhT5g3qr4F21+ytZMiIio6ts2nhZp1QHzQJHn+ZBz7nng6+D3q+lv1Gq1Ix2J+tIM+NzGoz495nn+pBGZtfEZEZEsyx4DcuCmqo7Y+nnflpin5uwwz/j6Ffiiff9Go3EMuGEXMbKj++M4HjQj14zUN8AcsKqqY3aDCbBeLpdbmUxVPw7ye55l2eOh3TRNTwWpdQNY6eRWYNpsTO1IMlC+Dmi9Xj8KrAOfANPA1TzPh8zQZLgmiqKBoHea3cHuuD+Mqr7WPq+qr9v6G41G49heiH5qxj4wdz2tqqPOaa6qYzb3Vtua27HtdCuM8RDVarXfiPzZPmc91i2gcM49tytJERHn3LNmcBVIqtVqf5qmj5pspSiKIizdnHMv+3DJsuy0uXi92WwOttv2pV8oK5fLJeBq+G3sCbVa7YhvzIArXg7cNNmCl9lTtAqkWZadFhHxzw3w3V6Iepf72AxfgCiKBu5IFvjBXDgWyC6Zsc8C2eV2vUql0gdc6xQiOxB9f6d3NE3Tk3ck2sNhxuwf5+6yzqHxwPxdduIebuMf7wvD3Oz+2y4AAAAASUVORK5CYII='
+const { errors, log } = require('cozy-konnector-libs')
+const PNG = require('pngjs').PNG
+
+/**
+ * Digit limits within the PNG image of the virtual keypad.
+ *
+ * @note These limits never vary, even when some background pixels are randomly modified.
+ *
+ * @note The index of the array indicates the digit.
+ * @note Each digit is defined by an array indicating the [firstColumn, firstLine, lastColumn, lastLine]
+ *       pixels of the digit representation in the PNG image.
+ */
+const DIGIT_LIMITS = [
+  [17, 7, 24, 17],
+  [18, 6, 21, 18],
+  [9, 7, 32, 34],
+  [10, 7, 31, 34],
+  [11, 6, 29, 34],
+  [14, 6, 28, 34],
+  [7, 7, 34, 34],
+  [5, 6, 36, 34],
+  [8, 7, 32, 34],
+  [4, 7, 38, 34]
+]
+
+/**
+ * Get the image limits, i.e. the pixel limits of the object represented on a background color.
+ * @param {object} PNG image built with pngjs
+ * @param {object} RGB representation of the background color
+ * @returns {object} Image limits
+ */
+function getImageLimits(image, color) {
+  // Initialization
+  let limits = {}
+  limits.firstLine = image.height
+  limits.lastLine = 0
+  limits.firstCol = image.width
+  limits.lastCol = 0
+
+  // Get the first and the last lines
+  for (let y = 0; y < image.height; y++) {
+    for (let x = 0; x < image.width; x++) {
+      const idx = (image.width * y + x) << 2
+      if (
+        image.data[idx] == color.R &&
+        image.data[idx + 1] == color.G &&
+        image.data[idx + 2] == color.B
+      ) {
+        if (limits.firstLine == image.height) {
+          limits.firstLine = y
+        }
+        limits.lastLine = y
+        break
+      }
+    }
+  }
+
+  // Get the first and the last columns
+  for (let x = 0; x < image.width; x++) {
+    for (let y = 0; y < image.height; y++) {
+      const idx = (image.height * y + x) << 2
+      if (
+        image.data[idx] == color.R &&
+        image.data[idx + 1] == color.G &&
+        image.data[idx + 2] == color.B
+      ) {
+        if (limits.firstCol == image.width) {
+          limits.firstCol = x
+        }
+        limits.lastCol = x
+      }
+    }
+  }
+
+  return limits
+}
+
+/**
+ * Check if known digit limits match image limits
+ * @param {object} Known digit limits
+ * @returns {bool} Limits match
+ */
+function checkLimits(digitLimits) {
+  return (
+    digitLimits[0] == this.firstCol &&
+    digitLimits[1] == this.firstLine &&
+    digitLimits[2] == this.lastCol &&
+    digitLimits[3] == this.lastLine
+  )
+}
+
+/**
+ * Retrieve digit from image limits
+ * @param {object} Image limits
+ * @returns {Number} Digit
+ */
+function getDigit(limits) {
+  const digit = DIGIT_LIMITS.findIndex(checkLimits, limits)
+
+  // Check if the digit was correctly found
+  if (digit == -1) {
+    log(
+      'error',
+      'Failed to find a digit with limits: ' + JSON.stringify(limits)
+    )
+    throw new Error(errors.CAPTCHA_RESOLUTION_FAILED)
+  }
+
+  return digit
 }
 
 function getPassword($, password) {
   // Password input
   const $pwdInput = $('ul.password-input')
 
-  // Get b64 image from a button HTMLElement, by extraction for style attribute
-  const buttonToB64Pic = button => {
+  // Extract the key <=> digit association from the virtual keypad
+  const buttonToKeypad = button => {
     const $button = $(button)
 
     // Get the style attribute
     const btnStyle = $button.attr('style')
 
     // Parse style attribute for b64 picture
-    const [b64pic] = /data:image\/([a-zA-Z]*);base64,([^)]*)/.exec(btnStyle)
+    const b64pic = btnStyle.match(/data:image\/([a-zA-Z]*);base64,([^)]*)/)[2]
 
-    return b64pic
+    // Create a PNG image from the b64 picture
+    const pngImg = PNG.sync.read(Buffer.from(b64pic, 'base64'))
+
+    // Extract the limits of the digits within the PNG image
+    const limits = getImageLimits(pngImg, { R: 255, G: 255, B: 255 })
+
+    // Find the digit from the limits and associate it to its key
+    const keypad = {
+      key: $button.attr('data-matrix-key'),
+      digit: getDigit(limits)
+    }
+
+    return keypad
   }
 
-  const digitImgs = $pwdInput
+  const virtualKeypad = $pwdInput
     .find('[data-matrix-key]')
-    .map((x, y) => buttonToB64Pic(y))
+    .map((x, y) => buttonToKeypad(y))
     .get()
 
-  const imageCompareWrapperOptions = {
-    ignore: 'antialiasing'
+  // Find the key corresponding to the password digit in the virtual keypad
+  const digitToKey = digit => {
+    return virtualKeypad.find(el => el.digit == digit).key
   }
 
-  // Wrap resemble.js with Promise because this lib use old fashion callbacks
-  const imageCompareWrapper = async (p1b64, p2b64) => {
-    const r = await compareImages(p1b64, p2b64, imageCompareWrapperOptions)
-    return { ...r, p1: p1b64, p2: p2b64 }
-  }
-
-  // Get a digit and return the HTMLElement associated by comparing resemblance with reference base 64 pictures
-  const digitToButton = digit => {
-    const referencePicture = DIGIT_B64[digit]
-    const comparisons = digitImgs.map(elem =>
-      imageCompareWrapper(referencePicture, elem)
-    )
-
-    return Promise.all(comparisons).then(values => {
-      // Order images by resemblance
-      values.sort((a, b) => a.misMatchPercentage - b.misMatchPercentage)
-
-      // Pick the button whith the most resembling pic in the DOM
-      const targetPic = $('[data-matrix-key]')
-        .toArray()
-        .find(el => buttonToB64Pic(el) === values[0].p2)
-
-      return $(targetPic).data('matrix-key')
-    })
-  }
-
-  // Get DOM buttons that match digit images (Array<Promise<HtmlElement>>)
-  return [...password].map(digitToButton)
+  // Get DOM buttons that match digit images
+  return [...password].map(digitToKey)
 }
 
 module.exports = {
