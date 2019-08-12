@@ -3,11 +3,12 @@ node_js:
 - '8'
 env:
   global:
-  - GH_USER_EMAIL="travis@example.org"
-  - GH_USER_NAME="cozy-bot"
-  - DEPLOY_REPOSITORY="git@github.com:konnectors/cozy-konnector-template.git"
-  # Token to access Cozy Registry, you should replace it with a token specific to this konnector
-  - secure: CQ44ZVjPAIVRvGgMcduSAX4VmaOrzF3nrJXPFUsNQ2tMVVdaAlI1zTNkdfntqigZgz6Mpk9x+2FcA8qrkNzQ4cW0lPP9f5dBtSH1xetfpXDFKprW4bqzmhgXSXJFTOYxkChOBPmCYJr+Vv4XqDkv/dBEPdfRSgvVyd5YxHSd5HBU91rKyR+Hox7LTnhmlXleLIs11EQgp7RK+L28MBCtCqAa2niFlKKRlqupm2FSpZzxCh9qeY0wKCQzPE+QZUm4waJ1SUGKQwbzAfyOxu2O6rwzaTSknfdJoSX6AMxjRTWBC9c3VfUGM3wjVJIqMhiUj2FQhVIjiDyX/W60/q3UMC5WYzSvEDDfhnKCPwiUKSU7HvSxx9q2YP34evxKo7KPahz9zLlQZvW+GBMyI9hbMDBTALuQVVzhftsvqfrogyYhkEPviiYiVADWNxhacsbUjRA5svXnZvtmCPo7fLFwel/krgC5Z8AwAY0YxWjSHNVScUkieSDCrlxrC09vTtG60unt9gtXbD5ruUkDLWSUwHBv2p0WY1TdP+2Vlf3yYfBvEVbqi59AxG+T17bq7Xv3QZnkrwC+UOCNCeg+gHPv+fRpUaYWzCO4uaoY/nlJa7RulQFhGca3A//6xRo/KgWw9JJnOXJelNjE9oHCUu9xShotUZKOF+O93V/BRqs9ITo=
+  - MATTERMOST_CHANNEL=publication
+  - DEPLOY_REPOSITORY="git@github.com:konnectors/boursorama.git"
+  # REGISTRY_TOKEN(editor=cozy, app=boursorama)
+  - secure: Cqxy7CajOVN86auxDnib5h9ThAk2lOXAWRKUAY+yxXkuulC8D/ScZt5l18gVAzrQiRSlOoG0Tn3eeNyZ+Ey5hUzFiBW7NPtlBCy09N5MqBg7L3oE7HvqNzsteT7sKih82ytgU+nm/Dss30HGXCHoSeClDwYJzjEO2ROMYX3A5SoON74mcI1JjabJR3WaEP4btu2YDuir5bgYhg0DIz06isLL5cGo707NKWXNyJHJGQe/00gHtc+TpAfc99Ek0ahmaTyre/eS0ftcNLd+iA7ywVygYgYXA0Zz7eLZn8elI2++1dAdadUnGcYDxeCoChl0HQTuVuE5jtCYGL0kIA5pme15CIxFRlv/X3NE7nndQEsqO9rYBhjevIsD6Uu65amtJKY3sc6iefuXcxybsvzu2FZvSlIsijx6PdDYUf92kxdOmX4qprgNlllK9QGu349WtPcetsAQKNAGszD+sHgvFOBHHBzcV3W7je3KQyYF8eQuAMXGQezRuxsKEw8MB6cSSOKNdidZicv6NIm1aA7ZLZI1nUIwNU6rMoJ0DRaMPC9q3KTFydD4IPmgsv++s3KUnY0QEpleLlYPJZIhWkdFpiMpvLj/3t3OxZS6xAYuVvyNwnq4LHFHr4ZuuKC+xA1yy4LgIBntXc8dG37vNuoYay3hF6PLa341MEDO15coATA=
+  # MATTERMOST_HOOK_URL
+  - secure: na5nsJuTdTQmEIwBp7EK4BZQPXWXaXm5GuqZlJ2zpc18DDayZEGXuopofsIdkTiRzRkW5m8nyq5Y3UUlmN0UyYaF6MzPMwFfCcd37ybk6kMuYsQkQNBPpJWNgvzijE+owVFUhaL5DeOdhVXu+IqXu5gHQXpfp26f9JjATA1TOvenOfJ43E3UXIe3yvdDLTIVvn3RBlaOQix48xR2kAHB7Jc0sJMsmTRhbkbXTJQjTT2hnUGQZX+gUfGbRN6z2Z4JT1uTNgnhFpYsxQN5fOjTSoV5Z/CtyxSN3CndPI/rkJrxjseQUqQZ6LhCJKrtrdYpi21yRgKmmp1oj7CjOMUMSlTKUPx7WbPZsoi+QDVpe8n+nPM8brW3usWBwjzy1zTmOzQlBUDDVQycQzkK3xlbMw9xut9oZX/5DsD/d28dh7579Y0PmBZ5KX7Ee/en2rSM19A6MIxH4HivWGXTALoSqT2DQLzcP1mtaAXR6fmnNbsEmghrd21g6BwVD6OS8MxxQZXrs+qDE2kAhTTDUdZHZNv45kJf+28iB0xffUyjJwmhjtXbfmzTpOPQrQfWhN9fztvVwcQhZPnO89hjCQHmyjX1WTOxYUSYeqfaOyLIFDmYovsHlbLVeMeL1X9Ya39htT7cs46zvGGhBt0lZeK2fPQ0lhR7+0HZERNYb27Flbw=
 cache:
   yarn: true
   directories:
@@ -15,26 +16,24 @@ cache:
 branches:
   except:
   - build
-  - latest
+  - build-debug
 script:
 - yarn lint
 - yarn build
-- yarn run check
 deploy:
 - provider: script
   skip-cleanup: true
-  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
+  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish --space selfhosted
   on:
     branch: master
 - provider: script
   skip-cleanup: true
-  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
+  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish --space selfhosted --postpublish mattermost
   on:
     tags: true
 before_install:
-# run the yarn travisDeployKey command to genrate this
-# - openssl aes-256-cbc -K $encrypted_0b21ecdcf920_key -iv $encrypted_0b21ecdcf920_iv
-#   -in github_deploy_key.enc -out /tmp/github_deploy_key -d
+- openssl aes-256-cbc -K $encrypted_3ce4da1be438_key -iv $encrypted_3ce4da1be438_iv
+  -in github_deploy_key.enc -out /tmp/github_deploy_key -d
 - eval "$(ssh-agent -s)"
 - chmod 600 /tmp/github_deploy_key
 - ssh-add /tmp/github_deploy_key
