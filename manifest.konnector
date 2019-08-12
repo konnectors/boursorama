@@ -4,7 +4,7 @@
   "type": "konnector",
   "language": "node",
   "icon": "icon.jpg",
-  "slug": "bank-boursorama",
+  "slug": "boursorama",
   "source": "git@github.com:konnectors/boursorama.git",
   "editor": "Orandin",
   "vendor_link": "https://clients.boursorama.com",
