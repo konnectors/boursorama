@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "name": "Boursorama",
   "type": "konnector",
   "language": "node",
@@ -8,7 +8,9 @@
   "source": "git@github.com:konnectors/boursorama.git",
   "editor": "Orandin",
   "vendor_link": "https://clients.boursorama.com",
-  "categories": ["banking"],
+  "categories": [
+    "banking"
+  ],
   "frequency": "hourly",
   "fields": {
     "login": {
@@ -38,7 +40,9 @@
     },
     "accounts": {
       "type": "io.cozy.accounts",
-      "verbs": ["GET"]
+      "verbs": [
+        "GET"
+      ]
     },
     "bank.balancehistories": {
       "type": "io.cozy.bank.balancehistories"
@@ -51,7 +55,10 @@
     "name": "Simon Delberghe",
     "url": "https://github.com/orandin"
   },
-  "langs": ["fr", "en"],
+  "langs": [
+    "fr",
+    "en"
+  ],
   "locales": {
     "fr": {
       "short_description": "Récupère vos opérations bancaires",
