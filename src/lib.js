@@ -17,6 +17,7 @@ const keypad = require('./keypad')
 
 const doctypes = require('cozy-doctypes')
 const {
+  Document,
   BankAccount,
   BankTransaction,
   BalanceHistory,
@@ -31,8 +32,7 @@ const urlDownload = baseUrl + '/mon-budget/exporter-mouvements'
 const urlAccounts =
   baseUrl + '/dashboard/comptes?rumroute=dashboard.accounts&_hinclude=1'
 
-BankAccount.registerClient(cozyClient)
-BalanceHistory.registerClient(cozyClient)
+Document.registerClient(cozyClient)
 
 const reconciliator = new BankingReconciliator({ BankAccount, BankTransaction })
 const request = requestFactory({
