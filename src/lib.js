@@ -392,35 +392,6 @@ function parseOperations(account, operationLines) {
 }
 
 /**
- * Retrieves the balance history for one year and an account. If no balance history is found,
- * this function returns an empty document based on {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankbalancehistories|io.cozy.bank.balancehistories} doctype.
- * <br><br>
- * Note: Can't use <code>BalanceHistory.getByYearAndAccount()</code> directly for the moment,
- * because <code>BalanceHistory</code> invokes <code>Document</code> that doesn't have an cozyClient instance.
- *
- * @param {integer} year
- * @param {string} accountId
- * @returns {io.cozy.bank.balancehistories} The balance history for one year and an account.
- */
-async function getBalanceHistory(year, accountId) {
-  const index = await BalanceHistory.getIndex(
-    BalanceHistory.doctype,
-    BalanceHistory.idAttributes
-  )
-  const options = {
-    selector: { year, 'relationships.account.data._id': accountId },
-    limit: 1
-  }
-  const [balance] = await BalanceHistory.query(index, options)
-
-  if (balance) {
-    return balance
-  }
-
-  return BalanceHistory.getEmptyDocument(year, accountId)
-}
-
-/**
  * Retrieves the balance histories of each bank accounts and adds the balance of the day for each bank account.
  * @param {array} accounts Collection of {@link https://docs.cozy.io/en/cozy-doctypes/docs/io.cozy.bank/#iocozybankaccounts|io.cozy.bank.accounts}
  * already registered in database
@@ -466,7 +437,10 @@ function fetchBalances(accounts) {
 
   return Promise.all(
     accounts.map(async account => {
-      const history = await getBalanceHistory(currentYear, account._id)
+      const history = await BalanceHistory.getByYearAndAccount(
+        currentYear,
+        account._id
+      )
       history.balances[todayAsString] = account.balance
 
       return history
