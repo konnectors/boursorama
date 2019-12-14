@@ -161,7 +161,7 @@ function authenticate(login, passwd) {
       })
     })
     .then($ => {
-      if ($('a[role="logout"]').length) {
+      if ($('a[href="/se-deconnecter"]').length) {
         log('info', 'LOGIN_OK')
         return $
       } else {
