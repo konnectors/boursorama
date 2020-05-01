@@ -45,7 +45,7 @@
   "dependencies": {
     "cozy-konnector-libs": "4.34.2",
     "moment": "2.24.0",
-    "pngjs": "3.4.0"
+    "pngjs": "5.0.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "5.1.1",
