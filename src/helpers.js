@@ -17,12 +17,15 @@ const AccountType = {
   SAVINGS: 'Savings',
   CARD: 'CreditCard',
   MARKET: 'Market',
-  LIFE_INSURANCE: 'LifeInsurance'
+  PEA: 'PEA',
+  LIFE_INSURANCE: 'LifeInsurance',
+  CREDIT: 'ConsumerCredit'
 }
 
 const AbbrToAccountType = {
   cav: AccountType.CHECKINGS,
   livret: AccountType.SAVINGS,
+  epargne: AccountType.SAVINGS,
   pel: AccountType.SAVINGS,
   cel: AccountType.SAVINGS,
   ldd: AccountType.SAVINGS,
@@ -31,7 +34,9 @@ const AbbrToAccountType = {
   av: AccountType.LIFE_INSURANCE,
   'assurance-vie': AccountType.LIFE_INSURANCE,
   pea: AccountType.PEA,
-  carte: AccountType.CARD
+  cefp: AccountType.MARKET,
+  carte: AccountType.CARD,
+  consommation: AccountType.CREDIT
 }
 
 // ====== Public functions =======
@@ -69,14 +74,19 @@ function normalizeAmount(amount) {
  * @returns {string} The type of the bank account
  */
 function getAccountTypeFromUrl(url) {
-  let urlType = url.match(/\/compte\/([^/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
+  if (url === undefined) return undefined // if undefined then retorn undefined for not error in log
+
+  let urlType = url.match(/\/(compte|credit)\/([^/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
   let type = urlType[2] || urlType[1]
+
+  //log('debug', url, 'url')
+  //log('debug', type, 'type')
 
   return AbbrToAccountType[type] || 'Unknown'
 }
 
 /**
- * Searches in the classification.json file, the metadata corresponding to words passed in parameters.
+ * Searches in the classification.json file,Boursorama Konnector - Cozy Notes the metadata corresponding to words passed in parameters.
  * This function ignores the metadata dedicated to debit operations.
  *
  * @param {array} words

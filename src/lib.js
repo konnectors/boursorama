@@ -61,6 +61,10 @@ async function start(fields) {
   log('info', 'Parsing list of bank accounts')
   const bankAccounts = await lib.parseBankAccounts($)
 
+  //log('info', 'Finded :')
+  //log('info', bankAccounts)
+  //return
+
   log('info', 'Retrieve all informations for each bank accounts found')
 
   const today = moment().format('YYYY-MM-DD')
@@ -70,7 +74,7 @@ async function start(fields) {
 
   let allOperations = []
   for (let bankAccount of bankAccounts) {
-    log('info', 'Download CSV', 'bank.operations')
+    log('info', 'Download CSV (' + bankAccount.label + ')', 'bank.operations')
     let csv = await downloadCSVWithBankInformation(
       tenYearsAgo,
       today,
@@ -268,8 +272,12 @@ async function parseBankAccounts($) {
     },
     'table.table--accounts tr.table__line--account'
   )
+    // delete elems with undefined type
+    .filter(obj => obj.type !== undefined)
 
   for (let account of accounts) {
+    //log('debug', account)
+
     account.institutionLabel = 'Boursorama Banque'
     account.currency = 'EUR'
 
@@ -284,8 +292,19 @@ async function parseBankAccounts($) {
         sel: 'strong'
       }
     })
+
     account.number = number.reference
     account.vendorId = number.reference
+
+    if (number.reference === '') {
+      const numberAgain = scrape($('div.account-number'), {
+        reference: {
+          sel: 'strong:first-child'
+        }
+      })
+      account.number = numberAgain.reference
+      account.vendorId = numberAgain.reference
+    }
   }
 
   return accounts.map(x => omit(x, ['url']))
