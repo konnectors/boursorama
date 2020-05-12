@@ -268,6 +268,8 @@ async function parseBankAccounts($) {
     },
     'table.table--accounts tr.table__line--account'
   )
+    // delete elems with undefined type
+    .filter(obj => obj.type !== undefined)
 
   for (let account of accounts) {
     account.institutionLabel = 'Boursorama Banque'
