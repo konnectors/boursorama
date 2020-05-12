@@ -69,6 +69,8 @@ function normalizeAmount(amount) {
  * @returns {string} The type of the bank account
  */
 function getAccountTypeFromUrl(url) {
+  if (url === undefined) return undefined // if undefined then return undefined for no error in log
+
   let urlType = url.match(/\/compte\/([^/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
   let type = urlType[2] || urlType[1]
 
