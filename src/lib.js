@@ -288,6 +288,16 @@ async function parseBankAccounts($) {
     })
     account.number = number.reference
     account.vendorId = number.reference
+
+    if (number.reference === '') {
+      const numberAgain = scrape($('div.account-number'), {
+        reference: {
+          sel: 'strong:first-child'
+        }
+      })
+      account.number = numberAgain.reference
+      account.vendorId = numberAgain.reference
+    }
   }
 
   return accounts.map(x => omit(x, ['url']))
