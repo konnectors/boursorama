@@ -70,7 +70,7 @@ async function start(fields) {
 
   let allOperations = []
   for (let bankAccount of bankAccounts) {
-    log('info', 'Download CSV', 'bank.operations')
+    log('info', 'Download CSV (' + bankAccount.label + ')', 'bank.operations')
     let csv = await downloadCSVWithBankInformation(
       tenYearsAgo,
       today,
