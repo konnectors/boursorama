@@ -17,12 +17,15 @@ const AccountType = {
   SAVINGS: 'Savings',
   CARD: 'CreditCard',
   MARKET: 'Market',
-  LIFE_INSURANCE: 'LifeInsurance'
+  LIFE_INSURANCE: 'LifeInsurance',
+  PEA: 'PEA',
+  CREDIT: 'ConsumerCredit'
 }
 
 const AbbrToAccountType = {
   cav: AccountType.CHECKINGS,
   livret: AccountType.SAVINGS,
+  epargne: AccountType.SAVINGS,
   pel: AccountType.SAVINGS,
   cel: AccountType.SAVINGS,
   ldd: AccountType.SAVINGS,
@@ -31,7 +34,9 @@ const AbbrToAccountType = {
   av: AccountType.LIFE_INSURANCE,
   'assurance-vie': AccountType.LIFE_INSURANCE,
   pea: AccountType.PEA,
-  carte: AccountType.CARD
+  carte: AccountType.CARD,
+  cefp: AccountType.MARKET,
+  consommation: AccountType.CREDIT
 }
 
 // ====== Public functions =======
