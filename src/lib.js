@@ -281,23 +281,22 @@ async function parseBankAccounts($) {
     }
 
     const $ = await request({ uri: account.url })
-    const number = scrape($('h3.account-number'), {
+    let number = scrape($('h3.account-number'), {
       reference: {
         sel: 'strong'
       }
     })
-    account.number = number.reference
-    account.vendorId = number.reference
 
     if (number.reference === '') {
-      const numberAgain = scrape($('div.account-number'), {
+      number = scrape($('div.account-number'), {
         reference: {
           sel: 'strong:first-child'
         }
       })
-      account.number = numberAgain.reference
-      account.vendorId = numberAgain.reference
     }
+
+    account.number = number.reference
+    account.vendorId = number.reference
   }
 
   return accounts.map(x => omit(x, ['url']))
