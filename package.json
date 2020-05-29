@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "cozy-doctypes": "1.72.2",
-    "cozy-konnector-libs": "4.34.3",
+    "cozy-konnector-libs": "4.34.4",
     "moment": "2.24.0",
     "pngjs": "^5.0.0"
   },
