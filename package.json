@@ -46,7 +46,7 @@
     "cozy-doctypes": "1.72.2",
     "cozy-konnector-libs": "4.34.4",
     "moment": "2.26.0",
-    "pngjs": "^5.0.0"
+    "pngjs": "5.0.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "6.0.1",
