@@ -27,7 +27,8 @@ const {
 // ------
 
 const baseUrl = 'https://clients.boursorama.com'
-const urlLogin = baseUrl + '/connexion/'
+const urlLogin = baseUrl + '/connexion/saisie-mot-de-passe/'
+const urlKeyboard = baseUrl + '/connexion/clavier-virtuel?_hinclude=1'
 const urlDownload = baseUrl + '/mon-budget/exporter-mouvements'
 const urlAccounts =
   baseUrl + '/dashboard/comptes?rumroute=dashboard.accounts&_hinclude=1'
@@ -125,20 +126,17 @@ async function start(fields) {
 
 function authenticate(login, passwd) {
   let formData = {
-    'form[login]': login,
+    'form[clientNumber]': login,
     'form[password]': '',
-    'form[matrixRandomChallenge]': '',
-    'form[_token]': ''
+    'form[matrixRandomChallenge]': ''
   }
 
   return request({
     uri: urlLogin
   })
-    .then($ => {
-      formData['form[_token]'] = $('#form__token').val()
-
+    .then(() => {
       return request({
-        uri: urlLogin + 'clavier-virtuel'
+        uri: urlKeyboard
       })
     })
     .then($ => {
