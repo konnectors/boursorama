@@ -11,7 +11,7 @@
   "categories": [
     "banking"
   ],
-  "frequency": "hourly",
+  "frequency": "daily",
   "fields": {
     "login": {
       "type": "text"
