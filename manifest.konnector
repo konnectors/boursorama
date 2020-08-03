@@ -1,5 +1,5 @@
 {
-  "version": "1.5.1",
+  "version": "1.5.2",
   "name": "Boursorama",
   "type": "konnector",
   "language": "node",
@@ -11,7 +11,7 @@
   "categories": [
     "banking"
   ],
-  "frequency": "hourly",
+  "frequency": "daily",
   "fields": {
     "login": {
       "type": "text"
