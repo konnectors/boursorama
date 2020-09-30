@@ -27,7 +27,7 @@ const {
 // ------
 
 const baseUrl = 'https://clients.boursorama.com'
-const urlLogin = baseUrl + '/connexion/saisie-mot-de-passe/'
+const urlLogin = baseUrl + '/connexion/saisie-mot-de-passe'
 const urlKeyboard = baseUrl + '/connexion/clavier-virtuel?_hinclude=1'
 const urlDownload = baseUrl + '/mon-budget/exporter-mouvements'
 const urlAccounts =
