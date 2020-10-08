@@ -37,7 +37,7 @@ Document.registerClient(cozyClient)
 
 const reconciliator = new BankingReconciliator({ BankAccount, BankTransaction })
 const request = requestFactory({
-  //debug: 'full',
+  // debug: 'full',
   cheerio: true,
   json: false,
   jar: true
@@ -176,7 +176,7 @@ function authenticate(login, passwd) {
  */
 function downloadCSVWithBankInformation(fromDate, toDate, bankAccount) {
   const rq = requestFactory({
-    //debug: 'full',
+    // debug: 'full',
     cheerio: false,
     gzip: false,
     jar: true
