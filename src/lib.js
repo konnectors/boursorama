@@ -265,7 +265,18 @@ async function parseBankAccounts($) {
       }
     },
     'table.table--accounts tr.table__line--account'
-  )
+  ).filter(account => {
+    // All bank accounts found without balance or type are ignored
+    if (isNaN(account.balance) || account.type === undefined) {
+      log(
+        'debug',
+        `Account "${account.label}" found without balance or type, ignore it...`,
+        'bank.parseBankAccounts'
+      )
+      return false
+    }
+    return true
+  })
 
   for (let account of accounts) {
     account.institutionLabel = 'Boursorama Banque'
