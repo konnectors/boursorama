@@ -17,21 +17,27 @@ const AccountType = {
   SAVINGS: 'Savings',
   CARD: 'CreditCard',
   MARKET: 'Market',
-  LIFE_INSURANCE: 'LifeInsurance'
+  LIFE_INSURANCE: 'LifeInsurance',
+  PEA: 'PEA',
+  CREDIT: 'ConsumerCredit'
 }
 
 const AbbrToAccountType = {
   cav: AccountType.CHECKINGS,
   livret: AccountType.SAVINGS,
+  epargne: AccountType.SAVINGS,
   pel: AccountType.SAVINGS,
   cel: AccountType.SAVINGS,
   ldd: AccountType.SAVINGS,
   csljeune: AccountType.SAVINGS,
+  csl: AccountType.SAVINGS,
   ord: AccountType.MARKET,
   av: AccountType.LIFE_INSURANCE,
   'assurance-vie': AccountType.LIFE_INSURANCE,
   pea: AccountType.PEA,
-  carte: AccountType.CARD
+  carte: AccountType.CARD,
+  cefp: AccountType.MARKET,
+  consommation: AccountType.CREDIT
 }
 
 // ====== Public functions =======
@@ -69,8 +75,10 @@ function normalizeAmount(amount) {
  * @returns {string} The type of the bank account
  */
 function getAccountTypeFromUrl(url) {
-  let urlType = url.match(/\/compte\/([^/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
-  let type = urlType[2] || urlType[1]
+  if (url === undefined) return url
+
+  let urlType = url.match(/\/(compte|credit)\/([^\/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
+  let type = urlType[3] || urlType[2]
 
   return AbbrToAccountType[type] || 'Unknown'
 }

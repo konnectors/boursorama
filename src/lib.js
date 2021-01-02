@@ -71,7 +71,7 @@ async function start(fields) {
 
   let allOperations = []
   for (let bankAccount of bankAccounts) {
-    log('info', 'Download CSV', 'bank.operations')
+    log('info', 'Download CSV (' + bankAccount.label + ')', 'bank.operations')
     let csv = await downloadCSVWithBankInformation(
       tenYearsAgo,
       today,
@@ -271,7 +271,7 @@ async function parseBankAccounts($) {
     account.institutionLabel = 'Boursorama Banque'
     account.currency = 'EUR'
 
-    if (account.type == helpers.AbbrToAccountType['carte']) {
+    if (account.type === helpers.AbbrToAccountType['carte']) {
       // Ignore this step for the card account
       continue
     }
@@ -282,6 +282,7 @@ async function parseBankAccounts($) {
         sel: 'strong'
       }
     })
+
     account.number = number.reference
     account.vendorId = number.reference
   }
