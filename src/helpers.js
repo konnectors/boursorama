@@ -77,7 +77,7 @@ function normalizeAmount(amount) {
 function getAccountTypeFromUrl(url) {
   if (url === undefined) return url
 
-  let urlType = url.match(/\/(compte|credit)\/([^\/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
+  let urlType = url.match(/\/(compte|credit)\/([^/]+)\/[0-9a-f]+\/?(\w+)?\/?/)
   let type = urlType[3] || urlType[2]
 
   return AbbrToAccountType[type] || 'Unknown'
