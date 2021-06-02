@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "cozy-doctypes": "1.82.1",
-    "cozy-konnector-libs": "4.42.0",
+    "cozy-konnector-libs": "4.42.1",
     "moment": "2.29.1"
   },
   "devDependencies": {
