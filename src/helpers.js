@@ -59,11 +59,7 @@ function parseDate(date) {
  */
 function normalizeAmount(amount) {
   return parseFloat(
-    amount
-      .replaceAll(/\s/, '')
-      .replace('"', '')
-      .replace(',', '.')
-      .trim()
+    amount.replaceAll(/\s/, '').replace('"', '').replace(',', '.').trim()
   )
 }
 

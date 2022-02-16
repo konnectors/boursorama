@@ -65,9 +65,7 @@ async function start(fields) {
   log('info', 'Retrieve all informations for each bank accounts found')
 
   const today = moment().format('YYYY-MM-DD')
-  const tenYearsAgo = moment()
-    .subtract(10, 'years')
-    .format('YYYY-MM-DD')
+  const tenYearsAgo = moment().subtract(10, 'years').format('YYYY-MM-DD')
 
   let allOperations = []
   for (let bankAccount of bankAccounts) {
@@ -242,10 +240,7 @@ async function parseBankAccounts($) {
           let $children = $node.children()
           return $children.length
             ? $children.text()
-            : $node
-                .text()
-                .replaceAll('\\n', '')
-                .trim()
+            : $node.text().replaceAll('\\n', '').trim()
         },
         parse: body => body.toUpperCase()
       },
@@ -471,7 +466,7 @@ function saveBalances(balances) {
 
 // ===== Export ======
 
-String.prototype.replaceAll = function(search, replacement) {
+String.prototype.replaceAll = function (search, replacement) {
   var target = this
   return target.replace(new RegExp(search, 'g'), replacement)
 }
