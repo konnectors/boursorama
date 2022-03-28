@@ -283,11 +283,20 @@ async function parseBankAccounts($) {
     }
 
     const $ = await request({ uri: account.url })
-    const number = scrape($('h3.account-number'), {
+    let number = scrape($('h3.account-number'), {
       reference: {
         sel: 'strong'
       }
     })
+    // The display changed for some accounts: if the number is not available,
+    // try to retrieve it using the new method
+    if (number.reference === '') {
+      number = scrape($('.c-product-title'), {
+        reference: {
+          sel: 'h3.c-product-title__sublabel'
+        }
+      })
+    }
 
     account.number = number.reference
     account.vendorId = number.reference
