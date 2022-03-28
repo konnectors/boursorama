@@ -298,6 +298,17 @@ async function parseBankAccounts($) {
       })
     }
 
+    // Make sure an error is logged in case
+    // the account number is not correctly retrieved
+    if (
+      isNaN(number.reference) ||
+      number.reference == undefined ||
+      number.reference === ''
+    ) {
+      log('error', 'Failed to retrieve account number')
+      throw new Error(errors.UNKNOWN_ERROR)
+    }
+
     account.number = number.reference
     account.vendorId = number.reference
   }
