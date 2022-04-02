@@ -283,17 +283,35 @@ async function parseBankAccounts($) {
     }
 
     const $ = await request({ uri: account.url })
-    const number = scrape($('h3.account-number'), {
+    const number = scrape($('.c-product-title'), {
       reference: {
-        sel: 'strong'
+        sel: 'h3.c-product-title__sublabel'
       }
     })
+
+    if (!number || number.reference === '') {
+      log(
+        'error',
+        'Unable to retrieve account number for "'+ account.label + '". Probably because the website has changed.',
+        'bank.parseBankAccounts'
+      )
+      continue
+    }
 
     account.number = number.reference
     account.vendorId = number.reference
   }
 
-  return accounts.map(x => omit(x, ['url']))
+  return accounts
+    .map(x => omit(x, ['url']))
+    .filter(account => {
+      // Ignore the bank accounts without vendorId, except if the type account is a credit card.
+      let isCreditCard = account.type === helpers.AbbrToAccountType['carte']
+      return (
+        isCreditCard ||
+        Object.prototype.hasOwnProperty.call(account, 'vendorId')
+      )
+    })
 }
 
 /**
