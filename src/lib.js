@@ -283,19 +283,34 @@ async function parseBankAccounts($) {
     }
 
     const $ = await request({ uri: account.url })
-    const number = scrape($('.c-product-title'), {
+    let number = scrape($('h3.account-number'), {
       reference: {
-        sel: 'h3.c-product-title__sublabel'
+        sel: 'strong'
       }
     })
+    // The display changed for some accounts: if the number is not available,
+    // try to retrieve it using the new method
+    if (number.reference === '') {
+      number = scrape($('.c-product-title'), {
+        reference: {
+          sel: 'h3.c-product-title__sublabel'
+        }
+      })
+    }
 
-    if (!number || number.reference === '') {
+    // Make sure an error is logged in case
+    // the account number is not correctly retrieved
+    if (
+      isNaN(number.reference) ||
+      number.reference == undefined ||
+      number.reference === ''
+    ) {
       log(
         'error',
         'Unable to retrieve account number for "'+ account.label + '". Probably because the website has changed.',
         'bank.parseBankAccounts'
       )
-      continue
+      throw new Error(errors.UNKNOWN_ERROR)
     }
 
     account.number = number.reference
