@@ -305,7 +305,11 @@ async function parseBankAccounts($) {
       number.reference == undefined ||
       number.reference === ''
     ) {
-      log('error', 'Failed to retrieve account number')
+      log(
+        'error',
+        'Unable to retrieve account number for "'+ account.label + '". Probably because the website has changed.',
+        'bank.parseBankAccounts'
+      )
       throw new Error(errors.UNKNOWN_ERROR)
     }
 
@@ -313,7 +317,16 @@ async function parseBankAccounts($) {
     account.vendorId = number.reference
   }
 
-  return accounts.map(x => omit(x, ['url']))
+  return accounts
+    .map(x => omit(x, ['url']))
+    .filter(account => {
+      // Ignore the bank accounts without vendorId, except if the type account is a credit card.
+      let isCreditCard = account.type === helpers.AbbrToAccountType['carte']
+      return (
+        isCreditCard ||
+        Object.prototype.hasOwnProperty.call(account, 'vendorId')
+      )
+    })
 }
 
 /**

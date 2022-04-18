@@ -1,6 +1,6 @@
 {
   "name": "Boursorama",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "",
   "repository": {
     "type": "git",
@@ -43,11 +43,11 @@
   },
   "dependencies": {
     "cozy-doctypes": "1.83.6",
-    "cozy-konnector-libs": "4.52.0",
-    "moment": "2.29.1"
+    "cozy-konnector-libs": "4.52.1",
+    "moment": "2.29.2"
   },
   "devDependencies": {
-    "cozy-jobs-cli": "1.17.5",
+    "cozy-jobs-cli": "1.17.6",
     "cozy-konnector-build": "1.3.1",
     "jsdoc": "3.6.7"
   }
