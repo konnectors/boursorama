@@ -126,13 +126,16 @@ function authenticate(login, passwd) {
   let formData = {
     'form[clientNumber]': login,
     'form[password]': '',
-    'form[matrixRandomChallenge]': ''
+    'form[matrixRandomChallenge]': '',
+    'form[_token]': ''
   }
 
   return request({
     uri: urlLogin
   })
-    .then(() => {
+    .then($ => {
+      formData['form[_token]'] = $('input#form__token').val()
+
       return request({
         uri: urlKeyboard
       })
