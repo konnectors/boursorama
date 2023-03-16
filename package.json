@@ -41,7 +41,7 @@
     "travisDeployKey": "./bin/generate_travis_deploy_key"
   },
   "dependencies": {
-    "cozy-doctypes": "1.85.4",
+    "cozy-doctypes": "1.88.1",
     "cozy-konnector-libs": "4.56.4",
     "moment": "2.29.4"
   },
