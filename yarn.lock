@@ -2506,10 +2506,10 @@ cozy-device-helper@^2.1.0:
   dependencies:
     lodash "^4.17.19"
 
-cozy-doctypes@1.88.6:
-  version "1.88.6"
-  resolved "https://registry.yarnpkg.com/cozy-doctypes/-/cozy-doctypes-1.88.6.tgz#26be6580cd7e8d50471719d5809f4419ce649da8"
-  integrity sha512-N2HEQdnFyUyaReLBhIX9f/8o1c+7PNONpcStVqoRdixVhbx4vrr22qMq2dvUWNTGvPKAqo3ZJdVaMHC9ETZTGw==
+cozy-doctypes@1.88.7:
+  version "1.88.7"
+  resolved "https://registry.yarnpkg.com/cozy-doctypes/-/cozy-doctypes-1.88.7.tgz#cf971f8604ac129ca34a835672aa4c7cdaff4038"
+  integrity sha512-kfGRh8/Nt1+MlnT1lQerX+tGA2vMsCKuQuQ7zq8qHus23mGf+MsZe55ibN3Mis2IrZVfPlJeRJo4Rth6R/l9hg==
   dependencies:
     cozy-logger "^1.10.1"
     date-fns "^1.30.1"
