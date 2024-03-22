@@ -129,15 +129,32 @@ function authenticate(login, passwd) {
     'form[matrixRandomChallenge]': '',
     'form[_token]': ''
   }
+  let cookie = ''
 
   return request({
     uri: urlLogin
   })
+
+    // updated in 19/01/2023
+    // need to get cookie and set, reload page with him
+    .then($ => {
+        cookie = helpers.getCookie($)
+
+        return request({
+            uri: urlLogin,
+            headers: {
+                Cookie: cookie
+            }
+        })
+    })
     .then($ => {
       formData['form[_token]'] = $('input#form__token').val()
 
       return request({
-        uri: urlKeyboard
+        uri: urlKeyboard,
+        headers: {
+            Cookie: cookie
+        }
       })
     })
     .then($ => {
@@ -155,6 +172,9 @@ function authenticate(login, passwd) {
 
       return request({
         uri: urlLogin,
+        headers: {
+            Cookie: cookie
+        },
         method: 'POST',
         form: formData
       })
