@@ -64,6 +64,25 @@ function normalizeAmount(amount) {
 }
 
 /**
+ * Get cookie inside webpage
+ * @param $
+ * @returns {string}
+ */
+function getCookie($) {
+  const script = $('script').html()
+  let regexCookie = /document.cookie="(.+)";/g
+  let cookieFound = regexCookie.exec(script)
+
+  if (!cookieFound) {
+    log('critical', 'Cookie not found !')
+    throw new Error(errors.CAPTCHA_RESOLUTION_FAILED)
+  }
+
+  const cookieData = cookieFound[1]
+  return cookieData.split(';')[0]
+}
+
+/**
  * Analyzes the URL of the bank account to find its type
  *
  * @param {string} url The URL of the bank account
@@ -170,5 +189,6 @@ module.exports = {
   handleRequestErrors,
   getAccountTypeFromUrl,
   findMetadataForCreditOperation,
-  findMetadataForDebitOperation
+  findMetadataForDebitOperation,
+  getCookie
 }
